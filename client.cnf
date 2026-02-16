@@ -1,0 +1,55 @@
+[ ca ]
+default_ca                    = CA_default
+
+[ CA_default ]
+dir                           = ./
+certs                         = $dir
+crl_dir                       = $dir/crl
+database                      = $dir/index.txt
+new_certs_dir                 = $dir/newcerts
+certificate                   = $dir/certs/ca.crt
+serial                        = $dir/serial
+crl                           = $crl_dir/ca.pem
+private_key                   = $dir/private/ca.key
+name_opt                      = ca_default
+cert_opt                      = ca_default
+default_days                  = 60
+default_crl_days              = 30
+default_md                    = sha256
+preserve                      = no
+policy                        = policy_match
+unique_subject                = no
+x509_extensions               = v3_client
+
+[ policy_match ]
+countryName                   = optional
+stateOrProvinceName           = optional
+organizationName              = match
+organizationalUnitName        = optional
+commonName                    = supplied
+emailAddress                  = optional
+
+[ policy_anything ]
+countryName                   = optional
+stateOrProvinceName           = optional
+localityName                  = optional
+organizationName              = optional
+organizationalUnitName        = optional
+commonName                    = optional
+subjectAltName                = supplied
+emailAddress                  = optional
+
+[ req ]
+distinguished_name            = client
+string_mask                   = utf8only
+
+[ client ]
+commonName                    = Common Name
+
+0.organizationName            = Organization Name
+0.organizationName_default    = efa2d19
+
+[ v3_client ]
+basicConstraints              = CA:FALSE
+keyUsage                      = nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage              = 1.3.6.1.5.5.7.3.2

@@ -1,0 +1,18 @@
+# MacOS specific
+.DS_Store
+
+# Generated info
+ca.param
+index.txt*
+serial*
+crlnumber*
+
+# Generated dirictories
+certs/
+crl/
+csr/
+private/
+newcerts/
+
+# Root
+root/
