@@ -31,7 +31,8 @@ ca-root:
 	openssl ca \
 		-config ca.cnf \
 		-gencrl \
-		-out crl/ca.pem
+		-out crl/ca.pem \
+		-crldays "$$(( ( $$(openssl x509 -in certs/ca.crt -noout -enddate | awk -F= '{ print $$2 }' | xargs -I {} date -d '{}' +%s) - $$(date +%s) ) / 60 / 60 / 24 - 1 ))"
 	cat certs/ca-chain.pem crl/ca.pem > certs/ca-crl.pem
 
 verify-root:
@@ -61,7 +62,8 @@ ca: verify-root
 	openssl ca \
 		-config ca.cnf \
 		-gencrl \
-		-out crl/ca.pem
+		-out crl/ca.pem \
+		-crldays "$$(( ( $$(openssl x509 -in certs/ca.crt -noout -enddate | awk -F= '{ print $$2 }' | xargs -I {} date -d '{}' +%s) - $$(date +%s) ) / 60 / 60 / 24 - 1 ))"
 	cat certs/ca-chain.pem crl/ca.pem > certs/ca-crl.pem
 
 verify-ca:
@@ -78,7 +80,8 @@ revoke: verify-ca
 	openssl ca \
 		-config ca.cnf \
 		-gencrl \
-		-out crl/ca.pem
+		-out crl/ca.pem \
+		-crldays "$$(( ( $$(openssl x509 -in certs/ca.crt -noout -enddate | awk -F= '{ print $$2 }' | xargs -I {} date -d '{}' +%s) - $$(date +%s) ) / 60 / 60 / 24 - 1 ))"
 	cat certs/ca-chain.pem crl/ca.pem > certs/ca-crl.pem
 
 server: verify-ca
