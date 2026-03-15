@@ -2,7 +2,7 @@ SHELL := /usr/bin/env zsh
 
 CLIENT_NAME = $(or $(name), $(NAME), personal)
 CLIENT_DAYS = $(or $(days), $(DAYS), 365)
-EC_CURVE = $(or $(curve), $(CURVE), prime256v1)
+EC_CURVE = $(or $(curve), $(CURVE), secp384r1)
 
 .PHONY: all
 
@@ -45,14 +45,15 @@ ca: verify-root
 	openssl req \
 		-nodes \
 		-newkey ec:ca.param \
-		-sha256 \
+		-sha384 \
 		-keyout private/ca.key \
 		-out csr/ca.csr \
 		-config ca.cnf
 	openssl ca \
 		-startdate "$$(openssl x509 -in root/root.crt -noout -dates | grep -i before | awk -F= '{ print $$2 }' | xargs -I {} date -d '{}' -u '+%Y%m%d%H%M%SZ')" \
 		-enddate "$$(openssl x509 -in root/root.crt -noout -dates | grep -i after | awk -F= '{ print $$2 }' | xargs -I {} date -d '{}' -u '+%Y%m%d%H%M%SZ')" \
-		-notext -md sha256 \
+		-notext \
+		-md sha384 \
 		-in csr/ca.csr \
 		-out certs/ca.crt \
 		-cert root/root.crt \
@@ -88,14 +89,14 @@ server: verify-ca
 	openssl req \
 		-nodes \
 		-newkey ec:certs/ca.crt \
-		-sha256 \
+		-sha384 \
 		-keyout private/server.key \
 		-out csr/server.csr \
 		-config server.cnf
 	openssl ca \
 		-days 730 \
 		-notext \
-		-md sha256 \
+		-md sha384 \
 		-in csr/server.csr \
 		-out certs/server.crt \
 		-cert certs/ca.crt \
@@ -106,14 +107,14 @@ client: verify-ca
 	openssl req \
 		-nodes \
 		-newkey ec:certs/ca.crt \
-		-sha256 \
+		-sha384 \
 		-keyout private/$(CLIENT_NAME).key \
 		-out csr/$(CLIENT_NAME).csr \
 		-config client.cnf
 	openssl ca \
 		-days $(CLIENT_DAYS) \
 		-notext \
-		-md sha256 \
+		-md sha384 \
 		-in csr/$(CLIENT_NAME).csr \
 		-out certs/$(CLIENT_NAME).crt \
 		-cert certs/ca.crt \
